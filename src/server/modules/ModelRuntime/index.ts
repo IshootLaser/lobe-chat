@@ -22,13 +22,16 @@ export * from './trace';
 const getParamsFromPayload = (provider: string, payload: ClientSecretPayload) => {
   const llmConfig = getLLMConfig() as Record<string, any>;
 
-  switch (provider) {
+  // Normalize provider name to lowercase for case-insensitive matching
+  const normalizedProvider = provider.toLowerCase();
+
+  switch (normalizedProvider) {
     case ModelProvider.VertexAI: {
       return {};
     }
 
     default: {
-      const upperProvider = provider.toUpperCase();
+      const upperProvider = normalizedProvider.toUpperCase();
 
       // When a provider is explicitly specified (passed as parameter), always use its configuration
       // even if the API key is missing. Do not fallback to OpenAI as this causes issues
