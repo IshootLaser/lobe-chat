@@ -28,12 +28,17 @@ const getParamsFromPayload = (provider: string, payload: ClientSecretPayload) =>
     }
 
     default: {
-      let upperProvider = provider.toUpperCase();
+      const upperProvider = provider.toUpperCase();
 
-      if (!(`${upperProvider}_API_KEY` in llmConfig)) {
-        upperProvider = ModelProvider.OpenAI.toUpperCase(); // Use OpenAI options as default
-      }
-
+      // When a provider is explicitly specified (passed as parameter), always use its configuration
+      // even if the API key is missing. Do not fallback to OpenAI as this causes issues
+      // when DEFAULT_FILES_CONFIG specifies a different provider (e.g., zhipu) while
+      // OPENAI_API_KEY is also set. The provider runtime will handle missing API keys
+      // with appropriate error messages.
+      // 
+      // Note: ModelRuntime.initializeWithProvider already has a fallback to LobeOpenAI
+      // if the provider is not in the runtime map, so we don't need to handle unknown
+      // providers here.
       const apiKey = apiKeyManager.pick(payload?.apiKey || llmConfig[`${upperProvider}_API_KEY`]);
       const baseURL = payload?.baseURL || process.env[`${upperProvider}_PROXY_URL`];
 

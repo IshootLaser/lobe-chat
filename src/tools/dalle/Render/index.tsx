@@ -31,14 +31,11 @@ const DallE = memo<BuiltinRenderProps<DallEImageItem[]>>(({ content, messageId }
       {/*<ToolBar content={content} messageId={messageId} />*/}
       <PreviewGroup
         preview={{
-          // 切换图片时设置
-          onChange: (current: number) => {
-            currentRef.current = current;
-          },
-          // 点击预览显示时设置
-
+          // 点击预览显示时设置当前图片索引
           onVisibleChange: (visible: boolean, _prevVisible: boolean, current: number) => {
-            currentRef.current = current;
+            if (visible) {
+              currentRef.current = current;
+            }
           },
           toolbarAddon: <ActionIcon color={'#fff'} icon={Download} onClick={handleDownload} />,
         }}
